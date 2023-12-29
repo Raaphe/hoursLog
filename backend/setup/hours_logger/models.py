@@ -28,7 +28,7 @@ class Shift(models.Model):
         return f"{self.date}"
 
 class Invoice(models.Model):
-    invoice = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     date = models.DateField()
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='invoices')
 

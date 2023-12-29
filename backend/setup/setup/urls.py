@@ -1,21 +1,29 @@
-"""setup URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/3.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+With this setup, the following URLs will be available:
+
+- List and create employees: /employees/
+- Retrieve, update, and delete a specific employee: /employees/{id}/
+- List and create shifts: /shifts/
+- Retrieve, update, and delete a specific shift: /shifts/{id}/
+- List and create invoices: /invoices/
+- Retrieve, update, and delete a specific invoice: /invoices/{id}/
+
+You can use these URLs to perform CRUD operations on your Employee, Shift, and Invoice models using the corresponding viewsets and serializers.
+"""
+
+from django.urls import path, include
 from django.contrib import admin
-from django.urls import path
+from rest_framework.routers import DefaultRouter
+from hours_logger import views
+
+router = DefaultRouter()
+router.register(r'employees', views.employeeViewSet)
+router.register(r'shifts', views.shiftViewSet)
+router.register(r'invoices', views.invoiceViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include(router.urls)),
+    path('invoice/<int:invoice_id>', views.get_invoice, name='get_invoice_info'),
 ]
+
