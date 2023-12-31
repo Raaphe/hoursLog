@@ -11,6 +11,7 @@ With this setup, the following URLs will be available:
 You can use these URLs to perform CRUD operations on your Employee, Shift, and Invoice models using the corresponding viewsets and serializers.
 """
 
+from os import name
 from django.urls import path, include
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
@@ -24,6 +25,7 @@ router.register(r'invoices', views.invoiceViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
-    path('invoice/<int:invoice_id>', views.get_invoice, name='get_invoice_info'),
+    path('get_invoice_info/<int:invoice_id>', views.get_invoice, name='get_invoice_info'),
+    path('get_invoice_pdf/<int:invoice_id>', views.get_pdf, name='get_generated_pdf'),
 ]
 
