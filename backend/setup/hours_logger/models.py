@@ -16,7 +16,6 @@ class Shift(models.Model):
     total = models.FloatField(null = True, blank = True)
     date = models.DateField()
     description = models.TextField()
-    invoiced = models.BooleanField(default=False)
     
     invoice = models.ForeignKey('Invoice', on_delete=models.CASCADE, related_name='shifts')
 
