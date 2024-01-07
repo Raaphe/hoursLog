@@ -4,7 +4,7 @@ from datetime import *
 
 def convertInvoiceInfoToJson(invoice):
     shifts = invoice.shifts.values(
-        "date", "hours", "price", "total", "description"
+        "start_time", "hours", "price", "total", "description"
     )
     
     number = str(invoice.employee.phoneNumber)
@@ -12,7 +12,6 @@ def convertInvoiceInfoToJson(invoice):
     
     return {
         "Id": invoice.id,
-        "Invoice_Date": invoice.date,
          "Employee": {
              "First_Name": invoice.employee.firstName,
              "Last_Name": invoice.employee.lastName,

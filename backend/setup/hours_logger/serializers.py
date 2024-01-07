@@ -15,3 +15,8 @@ class invoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Invoice
         fields = '__all__'
+
+class pauseLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PauseLog
+        fields = '__all__'

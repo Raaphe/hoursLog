@@ -6,9 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
 
 from django.http import JsonResponse, HttpResponse
-
 from hours_logger.other import functions
-
 
 class employeeViewSet(viewsets.ModelViewSet):
     queryset = Employee.objects.all()
@@ -21,6 +19,10 @@ class shiftViewSet(viewsets.ModelViewSet):
 class invoiceViewSet(viewsets.ModelViewSet):
     queryset = Invoice.objects.all()
     serializer_class = invoiceSerializer
+    
+class pauseLogViewSet(viewsets.ModelViewSet):
+    queryset = PauseLog.objects.all()
+    serializer_class = pauseLogSerializer
 
 @csrf_exempt
 @require_GET

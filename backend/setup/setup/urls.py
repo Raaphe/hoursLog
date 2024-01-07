@@ -21,6 +21,7 @@ router = DefaultRouter()
 router.register(r'employees', views.employeeViewSet)
 router.register(r'shifts', views.shiftViewSet)
 router.register(r'invoices', views.invoiceViewSet)
+router.register(r'pauseLogs', views.pauseLogViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
