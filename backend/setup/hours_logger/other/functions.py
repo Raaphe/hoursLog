@@ -1,12 +1,28 @@
 from xhtml2pdf import pisa
 from io import BytesIO
 from datetime import *
+import re
 
 def convertInvoiceInfoToJson(invoice):
-    shifts = invoice.shifts.values(
-        "start_time", "hours", "price", "total", "description"
-    )
+    shifts_with_breaks = invoice.shifts.prefetch_related('pauselogs').all()
     
+    formatted_shifts = []
+    for shift in shifts_with_breaks:
+        start_date = re.search(r"\d{4}-\d{2}-\d{2}", str(shift.start)).group()
+        end_date = re.search(r"\d{4}-\d{2}-\d{2}", str(shift.end)).group()
+        
+        breaks = list(shift.pauselogs.values('pause_time', 'resume_time'))
+        
+        formatted_shifts.append({
+            "start": start_date,
+            "end": end_date,
+            "hours": shift.hours,
+            "price": shift.price,
+            "total": shift.total,
+            "description": shift.description,
+            "breaks": breaks
+        })
+
     number = str(invoice.employee.phoneNumber)
     formatted_number = f"({number[:3]}) - {number[3:6]} - {number[6:]}"
     
@@ -15,11 +31,11 @@ def convertInvoiceInfoToJson(invoice):
          "Employee": {
              "First_Name": invoice.employee.firstName,
              "Last_Name": invoice.employee.lastName,
-             "Adress": invoice.employee.address,
+             "Address": invoice.employee.address,
              "Phone_Number": formatted_number,
              "Email": invoice.employee.email
          },
-         "Shifts": list(shifts)
+         "Shifts": formatted_shifts
     }
 
 
@@ -52,9 +68,9 @@ def generatePdf(invoice):
                         {invoiceData["Employee"]["Email"]}
                     </td>
                     <td style="text-align: right; padding: 5px;">
-                        <strong>Start Date:</strong> {invoiceData["Shifts"][0]['date']}
+                        <strong>Start Date:</strong> {invoiceData["Shifts"][0]['start']}
                         <br>
-                        <strong>End Date:</strong> {invoiceData["Shifts"][-1]['date']}
+                        <strong>End Date:</strong> {invoiceData["Shifts"][-1]['start']}
                         <br>
                         <strong>Invoice #:</strong> {invoiceData["Id"]}
                     </td>
@@ -74,14 +90,14 @@ def generatePdf(invoice):
     """
 
     total = 0
-    invoiceData["Shifts"] = sorted(invoiceData["Shifts"], key=lambda x: (x['date'], '%Y-%m-%d'))
+    invoiceData["Shifts"] = sorted(invoiceData["Shifts"], key=lambda x: (x['start'], '%Y-%m-%d'))
     
     for shift in invoiceData["Shifts"]:
         total += shift['total']
         html_content += f"""
             <tr>
                 <td style="border-bottom: 1px solid #ddd; text-align: left; padding: 5px;"><b>{shift['description']}</b></td>
-                <td style="border-bottom: 1px solid #ddd; text-align: left; padding: 5px;">{shift['date']}</td>
+                <td style="border-bottom: 1px solid #ddd; text-align: left; padding: 5px;">{shift['start']}</td>
                 <td style="border-bottom: 1px solid #ddd; text-align: left; padding: 5px;">{float(shift['hours']):.2f}</td>
                 <td style="border-bottom: 1px solid #ddd; text-align: left; padding: 5px;">{float(shift['price']):.2f} $</td>
                 <td style="border-bottom: 1px solid #ddd; text-align: left; padding: 5px;">{float(shift['total']):.2f} $</td>

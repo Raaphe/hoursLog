@@ -4,7 +4,7 @@ from datetime import timedelta
 class Employee(models.Model):
     firstName = models.CharField(max_length=50)
     lastName = models.CharField(max_length=50)
-    address = models.TextField()
+    address = models.CharField(max_length=254)
     phoneNumber = models.CharField(max_length=10)
     email = models.EmailField()
     
@@ -12,8 +12,8 @@ class Employee(models.Model):
         return f"{self.firstName} {self.lastName}"
 
 class Shift(models.Model):
-    start_time = models.DateTimeField(null=True)
-    end_time = models.DateTimeField(null=True)
+    start = models.DateTimeField(null=True)
+    end = models.DateTimeField(null=True, blank=True)
     hours = models.FloatField(null=True, blank=True)
     price = models.FloatField()
     total = models.FloatField(null=True, blank=True)
@@ -22,10 +22,10 @@ class Shift(models.Model):
     invoice = models.ForeignKey('Invoice', on_delete=models.CASCADE, related_name='shifts')
 
     def total_worked_time(self):
-        if not self.end_time or not self.start_time:
+        if not self.end or not self.start:
             return timedelta(0)
         
-        worked_time = self.end_time - self.start_time
+        worked_time = self.end - self.start
         
         total_paused = timedelta(0)
         for log in self.pauselogs.all():
@@ -38,17 +38,16 @@ class Shift(models.Model):
     
     def rounded_hours(self):
         hours = self.total_worked_time().total_seconds() / 3600 
-        quarter_hours = 0.25
-        return round(hours / quarter_hours) * quarter_hours
+        return round(hours / 0.25) * 0.25
 
     def save(self, *args, **kwargs):
-        if self.end_time and self.start_time:
+        if self.end and self.start:
             self.hours = self.rounded_hours()
             self.total = self.hours * self.price if self.price is not None else None
         super().save(*args, **kwargs)
         
     def __str__(self):
-        return f"Shift starting at {self.start_time}"
+        return f"{self.start.strftime('%d/%m/%Y')} - {self.end.strftime('%d/%m/%Y')}"
 
 class PauseLog(models.Model):
     shift = models.ForeignKey(Shift, on_delete=models.CASCADE, related_name='pauselogs')
@@ -73,11 +72,11 @@ class PauseLog(models.Model):
                 pass
 
     def __str__(self):
-        return f"PauseLog for {self.shift} paused at {self.pause_time}"
+        return f"{self.shift} paused at {self.pause_time}"
 
 class Invoice(models.Model):
     id = models.AutoField(primary_key=True)
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='invoices')
 
     def __str__(self):
-        return f"Invoice id {self.id}"
+        return f"Invoice {self.id}"
