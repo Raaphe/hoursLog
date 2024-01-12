@@ -11,6 +11,8 @@ def convertInvoiceInfoToJson(invoice):
         start_date = re.search(r"\d{4}-\d{2}-\d{2}", str(shift.start)).group()
         end_date = re.search(r"\d{4}-\d{2}-\d{2}", str(shift.end)).group()
         
+        start_date, end_date = start_date.replace('-', '/'), end_date.replace('-', '/')
+        
         breaks = list(shift.pauselogs.values('pause_time', 'resume_time'))
         
         formatted_shifts.append({
@@ -61,7 +63,7 @@ def generatePdf(invoice):
                         <br>
                         {(invoiceData["Employee"]["First_Name"]) + " " + (invoiceData["Employee"]["Last_Name"])}
                         <br>
-                        {invoiceData["Employee"]["Adress"]}
+                        {invoiceData["Employee"]["Address"]}
                         <br>
                         {invoiceData["Employee"]["Phone_Number"]}
                         <br>
@@ -70,7 +72,7 @@ def generatePdf(invoice):
                     <td style="text-align: right; padding: 5px;">
                         <strong>Start Date:</strong> {invoiceData["Shifts"][0]['start']}
                         <br>
-                        <strong>End Date:</strong> {invoiceData["Shifts"][-1]['start']}
+                        <strong>End Date:</strong> {invoiceData["Shifts"][-1]['end']}
                         <br>
                         <strong>Invoice #:</strong> {invoiceData["Id"]}
                     </td>
@@ -94,15 +96,27 @@ def generatePdf(invoice):
     
     for shift in invoiceData["Shifts"]:
         total += shift['total']
-        html_content += f"""
-            <tr>
-                <td style="border-bottom: 1px solid #ddd; text-align: left; padding: 5px;"><b>{shift['description']}</b></td>
-                <td style="border-bottom: 1px solid #ddd; text-align: left; padding: 5px;">{shift['start']}</td>
-                <td style="border-bottom: 1px solid #ddd; text-align: left; padding: 5px;">{float(shift['hours']):.2f}</td>
-                <td style="border-bottom: 1px solid #ddd; text-align: left; padding: 5px;">{float(shift['price']):.2f} $</td>
-                <td style="border-bottom: 1px solid #ddd; text-align: left; padding: 5px;">{float(shift['total']):.2f} $</td>
-            </tr>
-        """
+        # formatted_number = f"({number[:3]}) - {number[3:6]} - {number[6:]}"
+        if shift['start'] != shift['end']:
+            html_content += f"""
+                <tr>
+                    <td style="border-bottom: 1px solid #ddd; text-align: left; padding: 5px;"><b>{shift['description']}</b></td>
+                    <td style="border-bottom: 1px solid #ddd; text-align: left; padding: 5px;">{shift['start'][5:]} - {shift['end'][5:]}</td>
+                    <td style="border-bottom: 1px solid #ddd; text-align: left; padding: 5px;">{float(shift['hours']):.2f}</td>
+                    <td style="border-bottom: 1px solid #ddd; text-align: left; padding: 5px;">{float(shift['price']):.2f} $</td>
+                    <td style="border-bottom: 1px solid #ddd; text-align: left; padding: 5px;">{float(shift['total']):.2f} $</td>
+                </tr>
+            """
+        else:
+            html_content += f"""
+                <tr>
+                    <td style="border-bottom: 1px solid #ddd; text-align: left; padding: 5px;"><b>{shift['description']}</b></td>
+                    <td style="border-bottom: 1px solid #ddd; text-align: left; padding: 5px;">{shift['start'][5:]}</td>
+                    <td style="border-bottom: 1px solid #ddd; text-align: left; padding: 5px;">{float(shift['hours']):.2f}</td>
+                    <td style="border-bottom: 1px solid #ddd; text-align: left; padding: 5px;">{float(shift['price']):.2f} $</td>
+                    <td style="border-bottom: 1px solid #ddd; text-align: left; padding: 5px;">{float(shift['total']):.2f} $</td>
+                </tr>
+            """
                                           
     html_content += f"""                
                     </tbody>
