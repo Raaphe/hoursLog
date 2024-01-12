@@ -96,7 +96,6 @@ def generatePdf(invoice):
     
     for shift in invoiceData["Shifts"]:
         total += shift['total']
-        # formatted_number = f"({number[:3]}) - {number[3:6]} - {number[6:]}"
         if shift['start'] != shift['end']:
             html_content += f"""
                 <tr>
