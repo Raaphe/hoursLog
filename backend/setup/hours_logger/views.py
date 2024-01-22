@@ -1,6 +1,7 @@
 from .models import *
 from .serializers import *
 from rest_framework import viewsets
+from django.core.exceptions import ObjectDoesNotExist
 
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
@@ -23,6 +24,16 @@ class invoiceViewSet(viewsets.ModelViewSet):
 class pauseLogViewSet(viewsets.ModelViewSet):
     queryset = PauseLog.objects.all()
     serializer_class = pauseLogSerializer
+
+@csrf_exempt
+@require_GET
+def get_employee_invoices(request, employee_id):
+    try:
+        employee = Employee.objects.get(pk=employee_id)
+        invoices = Invoice.objects.filter(employee=employee).order_by('id').values()
+        return JsonResponse(list(invoices), safe=False)
+    except ObjectDoesNotExist:
+        return JsonResponse({'error': 'Employee not found'}, status=404)
 
 @csrf_exempt
 @require_GET
