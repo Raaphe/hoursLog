@@ -47,7 +47,7 @@ class Shift(models.Model):
         super().save(*args, **kwargs)
         
     def __str__(self):
-        return f"{self.start.strftime('%d/%m/%Y')} - {self.end.strftime('%d/%m/%Y')}"
+        return f"{self.start.strftime('%d/%m/%Y')}"
 
 class PauseLog(models.Model):
     shift = models.ForeignKey(Shift, on_delete=models.CASCADE, related_name='pauselogs')

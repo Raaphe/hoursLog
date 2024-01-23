@@ -9,13 +9,18 @@ def convertInvoiceInfoToJson(invoice):
     formatted_shifts = []
     for shift in shifts_with_breaks:
         start_date = re.search(r"\d{4}-\d{2}-\d{2}", str(shift.start)).group()
-        end_date = re.search(r"\d{4}-\d{2}-\d{2}", str(shift.end)).group()
+        start_date = start_date.replace('-', '/')
         
-        start_date, end_date = start_date.replace('-', '/'), end_date.replace('-', '/')
-        
+        if shift.end != None:
+            end_date = re.search(r"\d{4}-\d{2}-\d{2}", str(shift.end)).group()
+            end_date = end_date.replace('-', '/')
+        else:
+            end_date = shift.end
+                
         breaks = list(shift.pauselogs.values('pause_time', 'resume_time'))
         
         formatted_shifts.append({
+            "id": shift.id,
             "start": start_date,
             "end": end_date,
             "hours": shift.hours,
