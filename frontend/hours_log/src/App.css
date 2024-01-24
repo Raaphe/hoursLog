@@ -6,3 +6,7 @@
 .card {
   width: 18rem; /* Fixed width for the cards */
 }
+
+body {
+  font-family: 'Raleway', sans-serif;
+}

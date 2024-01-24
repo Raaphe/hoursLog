@@ -32,7 +32,9 @@ const LandingPage = () => {
           <div key={user.id} className="card-container">
             <div
               className="card"
-              onClick={() => navigate("/dashboard", { state: { userId: user.id } })}
+              onClick={() =>
+                navigate("/Dashboard", { state: { userId: user.id } })
+              }
               onMouseEnter={() => setHover(true)}
               onMouseLeave={() => setHover(false)}
               style={cardStyle}

@@ -8,6 +8,8 @@ class Employee(models.Model):
     phoneNumber = models.CharField(max_length=10)
     email = models.EmailField()
     
+    hourlyRate = models.FloatField(default=0.00)
+    
     def __str__(self):
         return f"{self.firstName} {self.lastName}"
 

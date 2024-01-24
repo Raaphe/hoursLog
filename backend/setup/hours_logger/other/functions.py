@@ -17,7 +17,7 @@ def convertInvoiceInfoToJson(invoice):
         else:
             end_date = shift.end
                 
-        breaks = list(shift.pauselogs.values('pause_time', 'resume_time'))
+        breaks = list(shift.pauselogs.values('id','pause_time', 'resume_time'))
         
         formatted_shifts.append({
             "id": shift.id,
@@ -40,7 +40,8 @@ def convertInvoiceInfoToJson(invoice):
              "Last_Name": invoice.employee.lastName,
              "Address": invoice.employee.address,
              "Phone_Number": formatted_number,
-             "Email": invoice.employee.email
+             "Email": invoice.employee.email,
+             "Hourly_Rate": invoice.employee.hourlyRate
          },
          "Shifts": formatted_shifts
     }

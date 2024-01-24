@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import axios from 'axios';
-import { useStopwatch } from 'react-timer-hook';
-import moment from 'moment-timezone';
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
+import { useStopwatch } from "react-timer-hook";
+import moment from "moment-timezone";
 
 const sortItems = (items, attribute, ascending = true) => {
   return [...items].sort((a, b) => {
@@ -16,16 +16,55 @@ const sortItems = (items, attribute, ascending = true) => {
   });
 };
 
-const Timer = ({ invoiceId }) => {
-  const { seconds, minutes, hours, isRunning, start, pause, reset } = useStopwatch({ autoStart: false });
+const Timer = ({ invoiceId, hourlyRate }) => {
+  const { seconds, minutes, hours, isRunning, start, pause, reset } =
+    useStopwatch({ autoStart: false });
   const [hasStarted, setHasStarted] = useState(false);
 
-  const currentDateTime = () => {
-    return moment().tz("America/New_York").format();
-  }
+  const currentDateTime = () => moment().tz("America/New_York").format();
+  const formatTime = (time) => (time < 10 ? `0${time}` : time);
 
-  const formatTime = (time) => {
-    return time < 10 ? `0${time}` : time;
+  const postPauseLog = async (shiftId) => {
+    const url = "http://localhost:8000/pauseLogs/";
+    const data = {
+      pause_time: currentDateTime(),
+      resume_time: null,
+      pauseDuration: null,
+      shift: shiftId,
+    };
+    const response = await axios.post(url, data);
+    console.log("Pause logged:", response.data);
+  };
+
+  const updateLastBreak = async (invoice) => {
+    const lastShift = invoice.Shifts[invoice.Shifts.length - 1];
+    const lastBreakId = lastShift.breaks[lastShift.breaks.length - 1]?.id;
+
+    if (lastBreakId) {
+      const patchResponse = await axios.patch(
+        `http://localhost:8000/pauseLogs/${lastBreakId}/`,
+        { resume_time: currentDateTime() }
+      );
+      console.log("Break updated successfully:", patchResponse.data);
+    } else {
+      console.log("No break ID found to update");
+    }
+  };
+
+  const getLastShiftId = async (invoiceId) => {
+    const response = await axios.get(
+      `http://127.0.0.1:8000/get_invoice_info/${invoiceId}`
+    );
+    const invoice = response.data;
+    return invoice.Shifts[invoice.Shifts.length - 1]?.id;
+  };
+
+  const updateShiftEndTime = async (shiftId) => {
+    const patchResponse = await axios.patch(
+      `http://127.0.0.1:8000/shifts/${shiftId}/`,
+      { end: currentDateTime() }
+    );
+    console.log("Shift updated successfully:", patchResponse.data);
   };
 
   const handleClockIn = async () => {
@@ -33,30 +72,50 @@ const Timer = ({ invoiceId }) => {
     reset();
     start();
 
-    const url = 'http://127.0.0.1:8000/shifts/'; // Replace with your actual endpoint URL
+    const url = "http://127.0.0.1:8000/shifts/";
     const data = {
       start: currentDateTime(),
       end: null,
       hours: null,
-      price: 30,
+      price: hourlyRate,
       total: null,
       description: "n/a",
-      invoice: invoiceId
+      invoice: invoiceId,
     };
 
     try {
       const response = await axios.post(url, data);
-      console.log('Response:', response.data);
+      console.log("Response:", response.data);
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
 
-  const handlePauseResume = () => {
-    if (isRunning) {
-      pause();
-    } else {
-      start();
+  const handlePauseResume = async () => {
+    let shiftId = null,
+      invoice = null;
+
+    try {
+      const response = await axios.get(
+        `http://127.0.0.1:8000/get_invoice_info/${invoiceId}`
+      );
+      invoice = response.data;
+      shiftId = invoice.Shifts[invoice.Shifts.length - 1]?.id;
+    } catch (error) {
+      console.error("Error fetching invoice info:", error);
+      return;
+    }
+
+    try {
+      if (isRunning) {
+        pause();
+        await postPauseLog(shiftId);
+      } else {
+        start();
+        await updateLastBreak(invoice);
+      }
+    } catch (error) {
+      console.error("Error in pause/resume operation:", error);
     }
   };
 
@@ -64,52 +123,56 @@ const Timer = ({ invoiceId }) => {
     reset();
     pause();
     setHasStarted(false);
-  
+
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/get_invoice_info/${invoiceId}`);
-      const invoice = response.data;
-  
-      const lastShiftIndex = invoice.Shifts.length - 1;
-      const shiftId = invoice.Shifts[lastShiftIndex]?.id;
-  
+      const shiftId = await getLastShiftId(invoiceId);
       if (shiftId) {
-        const patchResponse = await axios.patch(`http://127.0.0.1:8000/shifts/${shiftId}/`, { end: currentDateTime() });
-        console.log('Shift updated successfully:', patchResponse.data);
+        await updateShiftEndTime(shiftId);
       } else {
-        console.log('No shift ID found to update');
+        console.log("No shift ID found to update");
       }
-  
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error in clock-out process:", error);
     }
   };
 
   return (
     <div>
-      <div className="row">
-        <div className="col-2 text-center">
-          {!isRunning && !hasStarted ? (
-            <button className="btn btn-success btn-lg" onClick={handleClockIn}>
-              Clock in
+      <div>
+        <div className="col-2 text-center m-5">
+          <h1>
+            {formatTime(hours)}:{formatTime(minutes)}:{formatTime(seconds)}
+          </h1>
+        </div>
+        <div className="row">
+          <div className="col-2 text-center">
+            {!isRunning && !hasStarted ? (
+              <button
+                className="btn btn-success btn-lg"
+                onClick={handleClockIn}
+              >
+                Clock in
+              </button>
+            ) : (
+              <button
+                className="btn btn-danger btn-lg"
+                onClick={handleClockOut}
+              >
+                Clock Out
+              </button>
+            )}
+          </div>
+          <div className="col-2">
+            <button
+              className="btn btn-outline-secondary btn-lg"
+              onClick={handlePauseResume}
+              disabled={!hasStarted}
+            >
+              {isRunning ? "Pause" : "Resume"}
             </button>
-          ) : (
-            <button className="btn btn-danger btn-lg" onClick={handleClockOut}>
-              Clock Out
-            </button>
-          )}
+          </div>
         </div>
-        <div className="col-2">
-          <button
-            className="btn btn-outline-secondary btn-lg"
-            onClick={handlePauseResume}
-            disabled={!hasStarted}
-          >
-            {isRunning ? "Pause" : "Resume"}
-          </button>
-        </div>
-        <div className="col-2">
-          {formatTime(hours)}:{formatTime(minutes)}:{formatTime(seconds)}
-        </div>
+        <br />
       </div>
     </div>
   );
@@ -141,15 +204,15 @@ const Dashboard = () => {
         console.error("Error fetching data:", err);
       }
     };
-
     getInvoicesInfo();
   }, [userId]);
 
   return (
     <div className="container m-5">
-      <h1>Welcome {invoicesInfo[0]?.Employee.First_Name}</h1>
-      <br />
-      <Timer invoiceId={invoicesInfo[0]?.Id}/>
+      <div className="col-4">
+        <h1>Welcome {invoicesInfo[0]?.Employee.First_Name}</h1>
+      </div>
+      <Timer invoiceId={invoicesInfo[invoicesInfo.length - 1]?.Id} hourlyRate={invoicesInfo[invoicesInfo.length - 1]?.Employee.Hourly_Rate} />
     </div>
   );
 };
