@@ -24,7 +24,7 @@ const Editor = () => {
 
         setStartDate(new Date(response.data.start));
         setEndDate(new Date(response.data.end));
-        setPrice(response.data.price);
+        setPrice(response.data.price.toFixed(2));
         setDescription(response.data.description);
       } catch (error) {
         console.error("Failed to fetch shift data:", error);
@@ -36,9 +36,26 @@ const Editor = () => {
     }
   }, [shiftId]);
 
+  const updateShiftDescription = async () => {
+    const patchResponse = await axios.patch(
+      `http://127.0.0.1:8000/shifts/${shiftId}/`,
+      { 
+        start: startDate,
+        end: endDate,
+        price: price,
+        description: description
+      }
+    );
+   alert("Description updated successfully:", patchResponse.data);
+  };
+
+  const deleteShift = async () => {
+    const deleteResponse = await axios.delete( `http://127.0.0.1:8000/shifts/${shiftId}/`)
+    alert("Shift deleted successfully:", deleteResponse.data);
+  }
+
   return (
     <div>
-      {console.log(description)}
       <form className="m-5">
         <button
           className="btn btn-outline-secondary btn-large"
@@ -59,7 +76,7 @@ const Editor = () => {
           </svg>
         </button>
         <div className="row text-center">
-          <h1>Edit shift details</h1>
+          <h1>Edit Shift Details</h1>
         </div>
         <br />
         <div class="row">
@@ -92,9 +109,8 @@ const Editor = () => {
             <br />
             <input
               type="number"
-              min="1"
               step="0.25"
-              placeholder={price.toFixed(2)}
+              value={price}
               onChange={(e) => setPrice(e.target.value)}
             />
           </div>
@@ -107,17 +123,17 @@ const Editor = () => {
               spellcheck="true"
               className="form-control w-100"
               rows="10"
-              placeholder={description}
+              value={description}
               onChange={(e) => setDescription(e.target.value)}
             ></textarea>
           </div>
-          <div className="col-6 text-center">
+          <div className="col-lg-6 text-center">
             <br /> <br /> <br />
-            <button className="btn btn-success btn-lg btn-block">
+            <button className="btn btn-success btn-lg btn-block" onClick={() => {updateShiftDescription(); navigate("/")}}>
               Save Shift Changes
             </button>
             <br /> <br />
-            <button className="btn btn-danger btn-lg btn-block">
+            <button className="btn btn-danger btn-lg btn-block" onClick={() => {deleteShift(); navigate("/")}}>
               Delete Shift
             </button>
           </div>

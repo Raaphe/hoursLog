@@ -25,7 +25,7 @@ const LandingPage = () => {
   }, []);
 
   return (
-    <div className="container">
+    <div className="container-fluid">
       <div className="horizontal-scroll vh-100 d-flex justify-content-center align-items-center">
         {users.map((user) => (
           <div key={user.id} className="card-container">

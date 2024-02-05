@@ -2,6 +2,18 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+const sortItems = (items, attribute, ascending = true) => {
+  return [...items].sort((a, b) => {
+    if (a[attribute] < b[attribute]) {
+      return ascending ? -1 : 1;
+    }
+    if (a[attribute] > b[attribute]) {
+      return ascending ? 1 : -1;
+    }
+    return 0;
+  });
+};
+
 const Shifts = ({ invoiceId, forceRefreshValue }) => {
   const [shifts, setShifts] = useState([{}]);
 
@@ -18,7 +30,7 @@ const Shifts = ({ invoiceId, forceRefreshValue }) => {
           );
           const invoice = response.data;
           const tempShifts = invoice.Shifts;
-          setShifts(tempShifts);
+          setShifts(sortItems(tempShifts, "id", false));
         } catch (err) {
           console.error("Error fetching data:", err);
         }

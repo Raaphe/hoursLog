@@ -36,6 +36,7 @@ def convertInvoiceInfoToJson(invoice):
     return {
         "Id": invoice.id,
          "Employee": {
+             "Id": invoice.employee.id,
              "First_Name": invoice.employee.firstName,
              "Last_Name": invoice.employee.lastName,
              "Address": invoice.employee.address,
