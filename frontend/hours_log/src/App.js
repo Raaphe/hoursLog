@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LandingPage from "./components/Landing_Page";
-import Dashboard from "./components/Dashboard";
+import Dashboard from "./components/dashboard/Dashboard";
 import SignUp from "./components/Sign_Up";
-import Editor from "./components/EditShiftInfo";
-import EmployeeEditor from "./components/EditEmployeeInfo";
+import Editor from "./components/dashboard/ShiftInfo";
+import EmployeeEditor from "./components/dashboard/EmployeeInfo";
 
 function App() {
   return (

@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../App.css";
-import { useNavigate } from "react-router-dom";
 
 const LandingPage = () => {
   const [users, setUsers] = useState([]);
+  const [hover, setHover] = useState(false);
 
   const navigate = useNavigate();
-  const [hover, setHover] = useState(false);
 
   const cardStyle = {
     cursor: hover ? "pointer" : "default",

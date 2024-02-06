@@ -7,12 +7,16 @@ const EmployeeEditor = () => {
   const navigate = useNavigate();
   const employee = location.state?.employee;
 
-  const [firstName, setFirstName] = useState(employee?.First_Name || '');
-  const [lastName, setLastName] = useState(employee?.Last_Name || '');
-  const [phoneNumber, setNumber] = useState(employee?.Phone_Number.match(/\d+/g)?.join('') || '');
-  const [address, setAddress] = useState(employee?.Address || '');
-  const [email, setEmail] = useState(employee?.Email || '');
-  const [price, setPrice] = useState(employee?.Hourly_Rate || '');
+  const [firstName, setFirstName] = useState(employee?.First_Name || "");
+  const [lastName, setLastName] = useState(employee?.Last_Name || "");
+  const [phoneNumber, setNumber] = useState(
+    employee?.Phone_Number.match(/\d+/g)?.join("") || ""
+  );
+  const [address, setAddress] = useState(employee?.Address || "");
+  const [email, setEmail] = useState(employee?.Email || "");
+  const [price, setPrice] = useState(
+    parseFloat(employee?.Hourly_Rate).toFixed(2) || ""
+  );
 
   const updateEmployeeDescription = async (e) => {
     try {
@@ -24,7 +28,7 @@ const EmployeeEditor = () => {
           address,
           phoneNumber,
           email,
-          hourlyRate: parseFloat(price),
+          hourlyRate: price,
         }
       );
       alert("Description updated successfully ", patchResponse);
@@ -35,7 +39,6 @@ const EmployeeEditor = () => {
   };
 
   const deleteEmployee = async (e) => {
-    e.preventDefault();
     try {
       await axios.delete(`http://127.0.0.1:8000/employees/${employee.Id}/`);
       alert("Employee deleted successfully");
@@ -65,7 +68,8 @@ const EmployeeEditor = () => {
               fillRule="evenodd"
               d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"
             />
-          </svg> Back
+          </svg>{" "}
+          Back
         </button>
         <div className="row text-center">
           <h1>Edit Employee Details</h1>
@@ -119,7 +123,7 @@ const EmployeeEditor = () => {
           <div className="form-group col-md-6">
             <label htmlFor="emailInput">Email</label>
             <input
-             type="email"
+              type="email"
               className="form-control"
               value={email}
               onChange={(e) => setEmail(e.target.value)}

@@ -6,8 +6,8 @@ import moment from "moment-timezone";
 const Timer = ({ invoiceId, hourlyRate, forceRefreshCallback }) => {
   const { seconds, minutes, hours, isRunning, start, pause, reset } =
     useStopwatch({ autoStart: false });
+  
   const [hasStarted, setHasStarted] = useState(false);
-
   const [shiftDescription, setShiftDescription] = useState("");
 
   const currentDateTime = () => moment().tz("America/New_York").format();
@@ -136,7 +136,7 @@ const Timer = ({ invoiceId, hourlyRate, forceRefreshCallback }) => {
       }
     } else {
       alert(
-        "Please enter at least 4 caracters in the description box to clock out of a shit."
+        "Please enter at least 4 characters in the description box to clock out of a shift."
       );
     }
 

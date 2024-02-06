@@ -22,18 +22,14 @@ const Editor = () => {
           `http://localhost:8000/shifts/${shiftId}/`
         );
 
-        setStartDate(new Date(response.data.start));
-        setEndDate(new Date(response.data.end));
-        setPrice(response.data.price.toFixed(2));
-        setDescription(response.data.description);
+        setStartDate(new Date(response?.data.start));
+        setEndDate(new Date(response?.data.end));
+        setPrice(response.data.price.toFixed(2) || 0.00);
+        setDescription(response.data.description || "");
       } catch (error) {
         console.error("Failed to fetch shift data:", error);
       }
-    };
-
-    if (shiftId) {
-      getShiftInfo();
-    }
+    }; getShiftInfo();
   }, [shiftId]);
 
   const updateShiftDescription = async () => {
@@ -46,12 +42,12 @@ const Editor = () => {
         description: description
       }
     );
-   alert("Description updated successfully:", patchResponse.data);
+   alert("Description updated successfully ", patchResponse.data);
   };
 
   const deleteShift = async () => {
-    const deleteResponse = await axios.delete( `http://127.0.0.1:8000/shifts/${shiftId}/`)
-    alert("Shift deleted successfully:", deleteResponse.data);
+    const deleteResponse = await axios.delete(`http://127.0.0.1:8000/shifts/${shiftId}/`)
+    alert("Shift deleted successfully ", deleteResponse.data);
   }
 
   return (
