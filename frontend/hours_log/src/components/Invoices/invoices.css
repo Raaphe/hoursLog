@@ -1,0 +1,7 @@
+
+/* Styles for the table row hover state */
+table tr:hover {
+    background-color: #2e9ddd; /* Light grey color on hover */
+    cursor: pointer; /* Changes the mouse cursor to a pointer to indicate it's clickable */
+}
+

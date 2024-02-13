@@ -28,5 +28,6 @@ urlpatterns = [
     path('employee/<int:employee_id>/invoices/', views.get_employee_invoices, name='employee_invoices'),
     path('get_invoice_info/<int:invoice_id>', views.get_invoice, name='get_invoice_info'),
     path('get_invoice_pdf/<int:invoice_id>', views.get_pdf, name='get_generated_pdf'),
+    
 ]
 

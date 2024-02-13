@@ -5,7 +5,7 @@ import DatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
 
-const Editor = () => {
+const ShiftDetails = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const shiftId = location.state?.shiftId;
@@ -55,7 +55,7 @@ const Editor = () => {
       <form className="m-5">
         <button
           className="btn btn-outline-secondary btn-large"
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/dashboard")}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -139,4 +139,4 @@ const Editor = () => {
   );
 };
 
-export default Editor;
+export default ShiftDetails;
