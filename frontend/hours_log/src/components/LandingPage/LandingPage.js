@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "../App.css";
+import "../../App.css";
 
 const LandingPage = () => {
   const [users, setUsers] = useState([]);

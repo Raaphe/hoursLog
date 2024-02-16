@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import Timer from "./Timer";
-import Shifts from "./Shifts";
+import Timer from "../views/Timer";
+import Shifts from "../views/Shifts";
 import sort from "../../hooks/sort";
 
 const Dashboard = () => {
@@ -12,6 +12,7 @@ const Dashboard = () => {
 
   const [forceRefreshCounter, setForceRefreshCounter] = useState(0);
   const [invoiceInfo, setinvoiceInfo] = useState({});
+  const [invoicesState, setInvoices] = useState([]);
 
   const invoiceCurrent = async (employeeId, invoiceId) => {
     setForceRefreshCounter((prev) => prev + 1)
@@ -33,6 +34,22 @@ const Dashboard = () => {
     }
   };
 
+  const handleGetInvoices = async () => {
+    try {
+      if (invoiceInfo.Shifts && invoiceInfo.Shifts.length !== 0) {
+        console.log(invoicesState);
+        navigate("/invoices", { state: { invoices: invoicesState } });
+      } else {
+        alert("No shifts to be invoiced");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+
+  }
+
+
+
   useEffect(() => {
     const getinvoiceInfo = async () => {
       if (!userId) return;
@@ -42,6 +59,7 @@ const Dashboard = () => {
           `http://127.0.0.1:8000/employee/${userId}/invoices/`
         );
         const invoices = response.data;
+        setInvoices(invoices)
 
         const invoiceInfoPromises = invoices.map((invoice) =>
           axios.get(`http://127.0.0.1:8000/get_invoice_info/${invoice.id}`)
@@ -102,7 +120,15 @@ const Dashboard = () => {
         </div>
         <div className="col-lg-8 text-end">
           <button
-            className="btn btn-outline-primary btn-lg"
+            className="btn btn-outline-primary btn-lg m-2"
+            onClick={() =>
+              handleGetInvoices()
+            }
+          >
+            Invoice List
+          </button>
+          <button
+            className="btn btn-primary btn-lg m-2"
             onClick={() =>
               invoiceCurrent(invoiceInfo?.Employee?.Id, invoiceInfo?.Id)
             }
