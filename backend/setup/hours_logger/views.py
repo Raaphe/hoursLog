@@ -4,6 +4,7 @@ from .models import *
 from .serializers import *
 from rest_framework import viewsets
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Min, Max
 
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
@@ -32,8 +33,28 @@ class pauseLogViewSet(viewsets.ModelViewSet):
 def get_employee_invoices(request, employee_id):
     try:
         employee = Employee.objects.get(pk=employee_id)
-        invoices = Invoice.objects.filter(employee=employee).order_by('id').values()
-        return JsonResponse(list(invoices), safe=False)
+        invoices = Invoice.objects.filter(employee=employee).order_by('id')
+        
+        invoices_data = []
+        for invoice in invoices:
+            # Fetch shifts related to the invoice and calculate the min start date and max end date
+            shifts_aggregate = invoice.shifts.aggregate(first_shift_start=Min('start'), last_shift_end=Max('end'))
+
+            # Convert datetime to date (if not None)
+            first_shift_start_date = shifts_aggregate['first_shift_start'].date() if shifts_aggregate['first_shift_start'] else None
+            last_shift_end_date = shifts_aggregate['last_shift_end'].date() if shifts_aggregate['last_shift_end'] else None
+
+            # Construct the invoice data including the additional shift information
+            invoice_data = {
+                'id': invoice.id,
+                'employee_id': employee.id,
+                'start': first_shift_start_date,
+                'end': last_shift_end_date,
+                # Include other invoice fields as needed
+            }
+            invoices_data.append(invoice_data)
+        
+        return JsonResponse(invoices_data, safe=False)
     except ObjectDoesNotExist:
         return JsonResponse({'error': 'Employee not found'}, status=404)
 

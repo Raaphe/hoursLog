@@ -55,7 +55,7 @@ const ShiftDetails = () => {
       <form className="m-5">
         <button
           className="btn btn-outline-secondary btn-large"
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigate("/")}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
