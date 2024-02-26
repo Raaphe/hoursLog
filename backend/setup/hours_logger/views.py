@@ -91,17 +91,3 @@ def get_pdf(request, invoice_id):
         return JsonResponse({"error": "Invoice not found"}, status=404)
     except ValueError:
         return JsonResponse({"error": "Invalid 'invoice_id' parameter"}, status=400)
-
-
-# @csrf_exempt
-# @require_GET
-# def get_employee_invoices(request, employee_id:int) -> JsonResponse:
-    
-#     try :
-#         employee:Employee = get_object_or_404(Employee, pk=employee_id);
-#         invoices:List[Invoice] = Invoice.objects.filter(employee=employee).values();
-
-#         context = {"invoices": invoices, "employee": employee};
-#         return JsonResponse(context, safe=False);
-#     except: 
-#         return JsonResponse({"error": "Invalid request"}, status=400)

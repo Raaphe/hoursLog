@@ -32,7 +32,7 @@ const EmployeeEditor = () => {
         }
       );
       alert("Description updated successfully ", patchResponse);
-      navigate("/");
+      navigate(-1);
     } catch (error) {
       console.error("Failed to update employee:", error);
     }
@@ -42,7 +42,7 @@ const EmployeeEditor = () => {
     try {
       await axios.delete(`http://127.0.0.1:8000/employees/${employee.Id}/`);
       alert("Employee deleted successfully");
-      navigate("/");
+      navigate(-1);
     } catch (error) {
       console.error("Failed to delete employee:", error);
     }
@@ -54,7 +54,7 @@ const EmployeeEditor = () => {
         <button
           type="button"
           className="btn btn-outline-secondary btn-large"
-          onClick={() => navigate("/")}
+          onClick={() => navigate(-1)}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

@@ -24,7 +24,7 @@ const Shifts = ({ invoiceId, forceRefreshValue }) => {
           console.error("Error fetching data:", err);
         }
       }; getShiftsInfo();
-    }, 100);
+    }, 50);
 
     return () => clearTimeout(timer);
   }, [invoiceId, forceRefreshValue]);

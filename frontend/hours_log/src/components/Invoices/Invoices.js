@@ -1,7 +1,5 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import "./invoices.css";
-import axios from "axios";
 
 const Invoices = () => {
   const location = useLocation();
@@ -37,7 +35,7 @@ const Invoices = () => {
                 fill-rule="evenodd"
                 d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"
               />
-            </svg>
+            </svg> Back
           </button>
           <h2 className="text-center mb-4">Previous Invoices</h2>
           <div className="table-responsive">
@@ -74,7 +72,7 @@ const Invoices = () => {
                       <td>
                         <button
                           type="button"
-                          className="btn btn-outline-success btn-small"
+                          className="btn btn-success btn-small"
                           onClick={(e) => handleInvoiceClick(invoice.id)}
                         >
                           <svg
@@ -94,6 +92,11 @@ const Invoices = () => {
                         <button
                           type="button"
                           className="btn btn-outline-secondary btn-small"
+                          onClick={() =>
+                            navigate("/invoice", {
+                              state: { invoiceId: invoice.id },
+                            })
+                          }
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"

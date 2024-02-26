@@ -5,7 +5,7 @@ import SignUp from "./components/SignUp/SignUp";
 import ShiftDetails from "./components/ShiftDetails/ShiftDetails";
 import EmployeeEditor from "./components/views/EmployeeInfo";
 import Invoices from "./components/Invoices/Invoices";
-import InvoiceDetails from "./components/InvoiceDetails/ShiftDetails";
+import InvoiceDetails from "./components/Invoices/InvoiceDetails";
 
 function App() {
   return (
@@ -17,7 +17,7 @@ function App() {
         <Route path="/shift-editor" element={<ShiftDetails />} />
         <Route path="/employee-editor" element={<EmployeeEditor />} />
         <Route path="/invoices" element={< Invoices/>} />
-        <Route path="/invoice" element={< InvoiceDetails/>} />
+        <Route path="/invoice" element={< InvoiceDetails />} />
       
       </Routes>
     </BrowserRouter>

@@ -35,14 +35,14 @@ const ShiftDetails = () => {
   const updateShiftDescription = async () => {
     const patchResponse = await axios.patch(
       `http://127.0.0.1:8000/shifts/${shiftId}/`,
-      { 
+      {
         start: startDate,
         end: endDate,
         price: price,
         description: description
       }
     );
-   alert("Description updated successfully ", patchResponse.data);
+    alert("Description updated successfully ", patchResponse.data);
   };
 
   const deleteShift = async () => {
@@ -69,7 +69,7 @@ const ShiftDetails = () => {
               fill-rule="evenodd"
               d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"
             />
-          </svg>
+          </svg> Home
         </button>
         <div className="row text-center">
           <h1>Edit Shift Details</h1>
@@ -125,11 +125,11 @@ const ShiftDetails = () => {
           </div>
           <div className="col-lg-6 text-center">
             <br /> <br /> <br />
-            <button className="btn btn-success btn-lg btn-block" onClick={() => {updateShiftDescription(); navigate("/")}}>
+            <button className="btn btn-success btn-lg btn-block" onClick={() => { updateShiftDescription(); navigate("/") }}>
               Save Shift Changes
             </button>
             <br /> <br />
-            <button className="btn btn-danger btn-lg btn-block" onClick={() => {deleteShift(); navigate("/")}}>
+            <button className="btn btn-danger btn-lg btn-block" onClick={() => { deleteShift(); navigate("/") }}>
               Delete Shift
             </button>
           </div>
